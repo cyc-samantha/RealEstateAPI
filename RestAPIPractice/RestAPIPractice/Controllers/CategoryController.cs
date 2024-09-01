@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using RestAPIPractice.Data;
 using RestAPIPractice.Model;
 
 namespace RestAPIPractice.Controllers
@@ -8,28 +8,29 @@ namespace RestAPIPractice.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private List<Category> categories = new List<Category>()
-        {
-            new Category() { Id = 0, name = "Appartment", description = "Hola"},
-            new Category() { Id = 1, name = "Appartment", description = "Hola"},
-        };
+        APIDbContext _dbContext = new APIDbContext();
 
+        // GET: CategoryController
         [HttpGet]
         public IEnumerable<Category> Get()
         {
-            return categories;
+            return _dbContext.Categories;
         }
 
+        // GET: CategoryController/Details/5
+        [HttpGet("{id}")]
+        public Category Get(int id)
+        {
+            var category = _dbContext.Categories.FirstOrDefault(x=> x.Id== id);
+            return category;
+        }
+
+        // GET: CategoryController/Create
         [HttpPost]
-        public void Post([FromBody]Category category)
+        public void Post([FromBody] Category category)
         {
-            categories.Add(category);
+            _dbContext.Categories.Add(category);
+            _dbContext.SaveChanges();
         }
-
-        [HttpPut("id")]
-        public void Put(int id, [FromBody] Category category)
-        {
-            categories[id] = category;
-        }
-    };
+    }
 }
